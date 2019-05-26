@@ -1,12 +1,33 @@
 class Movie {
+  String id;
+  String overview;
+  String backdropUrl;
+  String originalLanguage;
+  String originalTitle;
+  String releaseDate;
+  String posterUrl;
   String title;
-  String posterPath;
 
-  Movie({this.title, this.posterPath});
+  Movie(
+      {this.id,
+        this.overview,
+        this.backdropUrl,
+        this.originalLanguage,
+        this.originalTitle,
+        this.releaseDate,
+        this.posterUrl,
+        this.title});
 
-  factory Movie.fromJson(Map<String, dynamic> json) {
-    return new Movie(
-        title: json['title'] as String,
-        posterPath: json['poster_path'] as String);
+  Movie.fromJson(Map<String, dynamic> json) {
+    overview = json['id'];
+
+    final attrs = json['attributes'] as Map<String, dynamic>;
+    overview = attrs['overview'];
+    backdropUrl = attrs['backdrop_url'];
+    originalLanguage = attrs['original_language'];
+    originalTitle = attrs['original_title'];
+    releaseDate = attrs['release_date'];
+    posterUrl = attrs['poster_url'];
+    title = attrs['title'];
   }
 }

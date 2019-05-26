@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
 import 'package:flutter_app/network/movie.dart';
-import 'package:flutter_app/page/movies/Movie.dart';
+import 'package:flutter_app/page/movies/source_movie_entity.dart';
 
 class MoviesPage extends StatelessWidget {
   @override
@@ -12,10 +12,13 @@ class MoviesPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Tickets"),
       ),
-      body: new FutureBuilder<List<Movie>>(
+      body: new FutureBuilder<List<SourceMovieData>>(
         future: fetchMovies(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) {
+            print(snapshot.error);
+            return Text(snapshot.error.toString());
+          }
 
           return snapshot.hasData
               ? new MoviesGridView(movies: snapshot.data)
@@ -28,7 +31,7 @@ class MoviesPage extends StatelessWidget {
 }
 
 class MoviesGridView extends StatelessWidget {
-  final List<Movie> movies;
+  final List<SourceMovieData> movies;
 
   const MoviesGridView({
     @required this.movies,
@@ -52,13 +55,19 @@ class MoviesGridView extends StatelessWidget {
   }
 }
 
-Widget buildListItem(BuildContext context, Movie item) {
+Widget buildListItem(BuildContext context, SourceMovieData item) {
   return Card(
-      semanticContainer: true,
       elevation: 0,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Stack(children: <Widget>[
-        Positioned.fill(child: Image.network(item.posterPath)),
+        Positioned.fill(
+            child: (item.attributes.posterUrl != null)
+                ? FittedBox(fit: BoxFit.cover, child: Image.network(item.attributes.posterUrl))
+                : Center(
+                    child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(item.attributes.title),
+                  ))),
         Positioned.fill(
             child: new Material(
                 color: Colors.transparent,
