@@ -2,26 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
-import 'package:flutter_app/network/movie.dart';
-import 'package:flutter_app/page/movies/source_movie_entity.dart';
+
+import '../../blocs/movies_bloc.dart';
+import '../../models/movie_model.dart';
 
 class MoviesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    bloc.fetchAllMovies();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tickets"),
+        title: Text("Movies"),
       ),
-      body: new FutureBuilder<List<SourceMovieData>>(
-        future: fetchMovies(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+      body: StreamBuilder(
+        stream: bloc.allMovies,
+        builder: (context, AsyncSnapshot<MovieModel> snapshot) {
           if (snapshot.hasError) {
             print(snapshot.error);
             return Text(snapshot.error.toString());
           }
 
           return snapshot.hasData
-              ? new MoviesGridView(movies: snapshot.data)
+              ? new MoviesGridView(movies: snapshot.data.results)
               : new Center(child: new CircularProgressIndicator());
         },
       ),
@@ -31,7 +33,7 @@ class MoviesPage extends StatelessWidget {
 }
 
 class MoviesGridView extends StatelessWidget {
-  final List<SourceMovieData> movies;
+  final List<Movie> movies;
 
   const MoviesGridView({
     @required this.movies,
@@ -55,18 +57,18 @@ class MoviesGridView extends StatelessWidget {
   }
 }
 
-Widget buildListItem(BuildContext context, SourceMovieData item) {
+Widget buildListItem(BuildContext context, Movie item) {
   return Card(
       elevation: 0,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Stack(children: <Widget>[
         Positioned.fill(
-            child: (item.attributes.posterUrl != null)
-                ? FittedBox(fit: BoxFit.cover, child: Image.network(item.attributes.posterUrl))
+            child: (item.posterUrl != null)
+                ? FittedBox(fit: BoxFit.cover, child: Image.network(item.posterUrl))
                 : Center(
                     child: Padding(
                     padding: const EdgeInsets.all(8),
-                    child: Text(item.attributes.title),
+                    child: Text(item.title, textAlign: TextAlign.center),
                   ))),
         Positioned.fill(
             child: new Material(

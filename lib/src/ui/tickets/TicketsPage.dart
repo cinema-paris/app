@@ -3,51 +3,20 @@ import 'dart:ui' as prefix0;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
-import 'package:flutter_app/network/movie.dart';
-import 'package:flutter_app/page/movies/source_movie_entity.dart';
 
-class TicketsPage extends StatefulWidget {
-  TicketsPage({Key key}) : super(key: key);
+import '../../blocs/tickets_bloc.dart';
+import '../../models/ticket_model.dart';
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<TicketsPage> {
-  int bottomSelectedIndex = 0;
-  SourceMovieData selectedTicket;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void pageChanged(int index, SourceMovieData ticket) {
-    setState(() {
-      bottomSelectedIndex = index;
-      selectedTicket = ticket;
-    });
-  }
+class TicketsPage extends StatelessWidget {
+  final GlobalKey<_ViewBackgroundState> myWidgetStateKey = new GlobalKey<_ViewBackgroundState>();
 
   @override
   Widget build(BuildContext context) {
+    bloc.fetchAllTickets();
+
     return Stack(
       children: <Widget>[
-        new Container(
-          decoration: new BoxDecoration(
-            image: new DecorationImage(
-              image: new NetworkImage(selectedTicket?.attributes?.posterUrl ??
-                  "https://image.tmdb.org/t/p/original/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: new BackdropFilter(
-            filter: new prefix0.ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-            child: new Container(
-              decoration: new BoxDecoration(color: Colors.white.withOpacity(0.0)),
-            ),
-          ),
-        ),
+        ViewBackground(key: myWidgetStateKey),
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
@@ -55,16 +24,16 @@ class _MyHomePageState extends State<TicketsPage> {
             elevation: 0.0,
             title: Text("Tickets"),
           ),
-          body: FutureBuilder<List<SourceMovieData>>(
-            future: fetchMovies(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
+          body: StreamBuilder(
+            stream: bloc.allTickets,
+            builder: (context, AsyncSnapshot<TicketModel> snapshot) {
               if (snapshot.hasError) {
                 print(snapshot.error);
                 return Text(snapshot.error.toString());
               }
 
               return snapshot.hasData
-                  ? buildPageContent(context, snapshot.data)
+                  ? buildPageContent(context, snapshot.data.results)
                   : new Center(child: new CircularProgressIndicator());
             },
           ),
@@ -74,10 +43,10 @@ class _MyHomePageState extends State<TicketsPage> {
     );
   }
 
-  Widget buildPageContent(BuildContext context, List<SourceMovieData> tickets) {
+  Widget buildPageContent(BuildContext context, List<Ticket> tickets) {
     return PageView.builder(
       onPageChanged: (index) {
-        pageChanged(index, tickets[index]);
+        myWidgetStateKey.currentState.setTicket(tickets[index]);
       },
       itemCount: tickets.length,
       itemBuilder: (context, position) {
@@ -86,7 +55,7 @@ class _MyHomePageState extends State<TicketsPage> {
     );
   }
 
-  Widget buildListItem(BuildContext context, SourceMovieData ticket) {
+  Widget buildListItem(BuildContext context, Ticket ticket) {
     return Padding(
       padding: const EdgeInsets.all(64),
       child: Card(
@@ -107,7 +76,7 @@ class _MyHomePageState extends State<TicketsPage> {
     );
   }
 
-  Widget buildListItemContent(BuildContext context, SourceMovieData ticket) {
+  Widget buildListItemContent(BuildContext context, Ticket ticket) {
     return Stack(
       children: <Widget>[
         Column(
@@ -115,10 +84,10 @@ class _MyHomePageState extends State<TicketsPage> {
           children: <Widget>[
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: (ticket?.attributes?.backdropUrl != null)
+              child: (ticket?.posterPath != null) //TODO: use backdrop
                   ? FittedBox(
                       fit: BoxFit.cover,
-                      child: Image.network(ticket.attributes.backdropUrl),
+                      child: Image.network(ticket.posterPath),
                     )
                   : Container(color: Theme.of(context).disabledColor),
             ),
@@ -128,7 +97,7 @@ class _MyHomePageState extends State<TicketsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    ticket.attributes.title,
+                    ticket.title,
                     style: Theme.of(context).textTheme.title,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
@@ -170,12 +139,48 @@ class _MyHomePageState extends State<TicketsPage> {
           padding: EdgeInsets.fromLTRB(16, 120, 16, 0),
           child: Container(
             width: 88,
-            child: (ticket?.attributes?.backdropUrl != null)
-                ? Image.network(ticket.attributes.posterUrl)
+            child: (ticket?.posterPath != null)
+                ? Image.network(ticket.posterPath)
                 : Container(color: Theme.of(context).backgroundColor, height: 132),
           ),
         )
       ],
+    );
+  }
+}
+
+class ViewBackground extends StatefulWidget {
+  ViewBackground({Key key}) : super(key: key);
+
+  @override
+  _ViewBackgroundState createState() => _ViewBackgroundState();
+}
+
+class _ViewBackgroundState extends State<ViewBackground> {
+  Ticket _ticket;
+
+  void setTicket(Ticket ticket) {
+    setState(() {
+      _ticket = ticket;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      decoration: new BoxDecoration(
+        image: new DecorationImage(
+          image: new NetworkImage(_ticket?.posterPath ??
+              "https://image.tmdb.org/t/p/original/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: new BackdropFilter(
+        filter: new prefix0.ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+        child: new Container(
+          decoration: new BoxDecoration(color: Colors.white.withOpacity(0.0)),
+        ),
+      ),
     );
   }
 }
