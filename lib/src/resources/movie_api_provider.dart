@@ -9,9 +9,7 @@ class MovieApiProvider {
   final _apiKey = 'your_api_key';
 
   Future<MovieModel> fetchMovieList() async {
-    print("entered");
-    final response = await client.get("http://192.168.86.10:3000/movies");
-    print(response.body.toString());
+    final response = await client.get("http://192.168.86.10:3000/movies").timeout(Duration(seconds: 5));
     if (response.statusCode == 200) {
       // If the call to the server was successful, parse the JSON
       return MovieModel.fromJson(json.decode(response.body));

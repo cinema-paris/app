@@ -2,7 +2,6 @@ import 'dart:ui' as prefix0;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
 
 import '../../blocs/tickets_bloc.dart';
 import '../../models/ticket_model.dart';
@@ -23,6 +22,7 @@ class TicketsPage extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0.0,
             title: Text("Tickets"),
+            centerTitle: true,
           ),
           body: StreamBuilder(
             stream: bloc.allTickets,
@@ -37,7 +37,7 @@ class TicketsPage extends StatelessWidget {
                   : new Center(child: new CircularProgressIndicator());
             },
           ),
-          bottomNavigationBar: buildBottomNavigationBar(context, 2),
+//          drawer: buildNavigationDrawer(),
         ),
       ],
     );

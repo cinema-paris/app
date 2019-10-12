@@ -1,32 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/src/ui/movies/MoviesDetailPage.dart';
+import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
 
 import '../../blocs/movies_bloc.dart';
 import '../../models/movie_model.dart';
 
-class MoviesPage extends StatelessWidget {
+class MoviesDetailPage extends StatelessWidget {
+  static const routeName = '/movies_detail';
+
   @override
   Widget build(BuildContext context) {
-    bloc.fetchAllMovies();
+    final Movie args = ModalRoute.of(context).settings.arguments;
+
+//    bloc.fetchAllMovies();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Movies"),
+        title: Text(args.title),
       ),
-      body: StreamBuilder(
-        stream: bloc.allMovies,
-        builder: (context, AsyncSnapshot<MovieModel> snapshot) {
-          if (snapshot.hasError) {
-            print(snapshot.error);
-            return Text(snapshot.error.toString());
-          }
-
-          return snapshot.hasData
-              ? new MoviesGridView(movies: snapshot.data.results)
-              : new Center(child: new CircularProgressIndicator());
-        },
-      ),
+      body: Text(args.overview),
+//      body: StreamBuilder(
+//        stream: bloc.allMovies,
+//        builder: (context, AsyncSnapshot<MovieModel> snapshot) {
+//          print(snapshot);
+//          if (snapshot.hasError) {
+//            print(snapshot.error);
+//            return Text(snapshot.error.toString());
+//          }
+//
+//          return snapshot.hasData
+//              ? new MoviesGridView(movies: snapshot.data.results)
+//              : new Center(child: new CircularProgressIndicator());
+//        },
+//      ),
     );
   }
 }
@@ -73,11 +79,7 @@ Widget buildListItem(BuildContext context, Movie item) {
             child: new Material(
                 color: Colors.transparent,
                 child: new InkWell(
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    MoviesDetailPage.routeName,
-                    arguments: item,
-                  ),
+                  onTap: () => null,
                 )))
       ]));
 }
