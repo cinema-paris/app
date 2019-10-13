@@ -44,35 +44,64 @@ class TicketsPage extends StatelessWidget {
   }
 
   Widget buildPageContent(BuildContext context, List<Ticket> tickets) {
+    return OrientationBuilder(builder: (context, orientation) {
+      if (MediaQuery.of(context).size.width > 600) {
+        return buildPageContentLarge(context, tickets);
+      } else {
+        return buildPageContentSmall(context, tickets);
+      }
+    });
+  }
+
+  Widget buildPageContentSmall(BuildContext context, List<Ticket> tickets) {
     return PageView.builder(
       onPageChanged: (index) {
         myWidgetStateKey.currentState.setTicket(tickets[index]);
       },
       itemCount: tickets.length,
       itemBuilder: (context, position) {
-        return buildListItem(context, tickets[position]);
+        return Container(
+          padding: const EdgeInsets.all(64),
+          child: buildListItemCard(context, tickets[position]),
+        );
       },
     );
   }
 
-  Widget buildListItem(BuildContext context, Ticket ticket) {
-    return Padding(
-      padding: const EdgeInsets.all(64),
-      child: Card(
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          margin: EdgeInsets.fromLTRB(0, 4, 0, 4),
-          child: AspectRatio(
-            aspectRatio: 0.618,
-            child: Stack(children: <Widget>[
-              buildListItemContent(context, ticket),
-              Positioned.fill(
-                  child: new Material(
-                      color: Colors.transparent,
-                      child: new InkWell(
-                        onTap: () => null,
-                      )))
-            ]),
-          )),
+  Widget buildPageContentLarge(BuildContext context, List<Ticket> tickets) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      scrollDirection: Axis.horizontal,
+      itemCount: tickets.length,
+      itemBuilder: (context, position) {
+        return Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 400),
+            padding: const EdgeInsets.all(24),
+            child: buildListItemCard(context, tickets[position]),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildListItemCard(BuildContext context, Ticket ticket) {
+    return Card(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      margin: EdgeInsets.fromLTRB(0, 4, 0, 4),
+      child: AspectRatio(
+        aspectRatio: 0.618,
+        child: Stack(children: <Widget>[
+          buildListItemContent(context, ticket),
+          Positioned.fill(
+            child: new Material(
+                color: Colors.transparent,
+                child: new InkWell(
+                  onTap: () => null,
+                )),
+          )
+        ]),
+      ),
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/src/ui/HomePage.dart';
 
 import 'ui/HomePage.dart';
+import 'ui/account/AccountPage.dart';
 import 'ui/cinemas/CinemasPage.dart';
 import 'ui/movies/MoviesDetailPage.dart';
 import 'ui/movies/MoviesPage.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
         '/cinemas': (BuildContext context) => CinemasPage(),
         '/movies': (BuildContext context) => MoviesPage(),
         '/tickets': (BuildContext context) => TicketsPage(),
+        '/account': (BuildContext context) => AccountPage(),
         MoviesDetailPage.routeName: (context) => MoviesDetailPage(),
       },
       theme: ThemeData(

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
-import 'package:flutter_app/src/ui/tickets/TicketsPage.dart';
 
+import 'account/AccountPage.dart';
 import 'cinemas/CinemasPage.dart';
 import 'movies/MoviesPage.dart';
+import 'tickets/TicketsPage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
     CinemasPage(),
     MoviesPage(),
     TicketsPage(),
-    TicketsPage(),
+    AccountPage(),
   ];
 
   void _onItemTapped(int index) {
