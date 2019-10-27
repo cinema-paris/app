@@ -3,7 +3,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../resources/repository.dart';
 
-class MoviesBloc {
+class CinemasBloc {
   final _repository = Repository();
   final _cinemasFetcher = PublishSubject<CinemaModel>();
 
@@ -19,4 +19,4 @@ class MoviesBloc {
   }
 }
 
-final bloc = MoviesBloc();
+final bloc = CinemasBloc();

@@ -11,6 +11,7 @@ class MoviesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     bloc.fetchAllMovies();
     return Scaffold(
+      backgroundColor: Color.fromARGB(0, 0, 0, 0),
       appBar: AppBar(
         title: Text("Movies"),
       ),
@@ -63,7 +64,8 @@ Widget buildListItem(BuildContext context, Movie item) {
       child: Stack(children: <Widget>[
         Positioned.fill(
             child: (item.posterUrl != null)
-                ? FittedBox(fit: BoxFit.cover, child: Image.network(item.posterUrl))
+                ? FittedBox(
+                    fit: BoxFit.cover, child: Image.network(item.posterUrl))
                 : Center(
                     child: Padding(
                     padding: const EdgeInsets.all(8),

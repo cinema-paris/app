@@ -9,11 +9,34 @@
 // Run this example with `flutter run --route=/signup` to start it with
 // the signup flow instead of on the home page.
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
 import 'package:flutter_app/src/app.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  _setTargetPlatformForDesktop();
+  runApp(new MyApp());
+}
+
+/// If the current platform is desktop, override the default platform to
+/// a supported platform (iOS for macOS, Android for Linux and Windows).
+/// Otherwise, do nothing.
+/// https://github.com/flutter/flutter/wiki/Desktop-shells#flutter-application-requirements
+void _setTargetPlatformForDesktop() {
+  TargetPlatform targetPlatform;
+  if (Platform.isMacOS) {
+    targetPlatform = TargetPlatform.iOS;
+  } else if (Platform.isLinux || Platform.isWindows) {
+    targetPlatform = TargetPlatform.android;
+  }
+  if (targetPlatform != null) {
+    debugDefaultTargetPlatformOverride = targetPlatform;
+  }
+}
 
 //class SignUpPage extends StatelessWidget {
 //  @override

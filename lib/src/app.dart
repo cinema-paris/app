@@ -26,6 +26,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         accentColor: Colors.deepPurple,
+        // See https://github.com/flutter/flutter/wiki/Desktop-shells#fonts
+        fontFamily: 'Roboto',
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:ui' as prefix0;
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ import '../../blocs/tickets_bloc.dart';
 import '../../models/ticket_model.dart';
 
 class TicketsPage extends StatelessWidget {
-  final GlobalKey<_ViewBackgroundState> myWidgetStateKey = new GlobalKey<_ViewBackgroundState>();
+  final GlobalKey<_ViewBackgroundState> myWidgetStateKey =
+      new GlobalKey<_ViewBackgroundState>();
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +46,15 @@ class TicketsPage extends StatelessWidget {
   }
 
   Widget buildPageContent(BuildContext context, List<Ticket> tickets) {
-    return OrientationBuilder(builder: (context, orientation) {
-      if (MediaQuery.of(context).size.width > 600) {
-        return buildPageContentLarge(context, tickets);
-      } else {
-        return buildPageContentSmall(context, tickets);
-      }
-    });
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        if (constraints.maxWidth > 600) {
+          return buildPageContentLarge(context, tickets);
+        } else {
+          return buildPageContentSmall(context, tickets);
+        }
+      },
+    );
   }
 
   Widget buildPageContentSmall(BuildContext context, List<Ticket> tickets) {
@@ -133,7 +137,8 @@ class TicketsPage extends StatelessWidget {
                   ),
                   Chip(
                     label: Text('VOST'),
-                    backgroundColor: Theme.of(context).accentColor.withOpacity(0.5),
+                    backgroundColor:
+                        Theme.of(context).accentColor.withOpacity(0.5),
                     labelStyle: Theme.of(context).textTheme.caption,
                   ),
                 ],
@@ -152,16 +157,30 @@ class TicketsPage extends StatelessWidget {
             ),
             Padding(
                 padding: const EdgeInsets.all(12),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-                    Text("Aujourd'hui"),
-                    Text("18:30", style: Theme.of(context).textTheme.body1.copyWith(fontSize: 32)),
-                  ]),
-                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: <Widget>[
-                    Text("Salle 01"),
-                    Text("R5, R3", style: Theme.of(context).textTheme.body1.copyWith(fontSize: 32)),
-                  ]),
-                ])),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("Aujourd'hui"),
+                            Text("18:30",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .body1
+                                    .copyWith(fontSize: 32)),
+                          ]),
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text("Salle 01"),
+                            Text("R5, R3",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .body1
+                                    .copyWith(fontSize: 32)),
+                          ]),
+                    ])),
           ],
         ),
         Padding(
@@ -170,7 +189,8 @@ class TicketsPage extends StatelessWidget {
             width: 88,
             child: (ticket?.posterPath != null)
                 ? Image.network(ticket.posterPath)
-                : Container(color: Theme.of(context).backgroundColor, height: 132),
+                : Container(
+                    color: Theme.of(context).backgroundColor, height: 132),
           ),
         )
       ],
@@ -196,20 +216,26 @@ class _ViewBackgroundState extends State<ViewBackground> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      decoration: new BoxDecoration(
-        image: new DecorationImage(
-          image: new NetworkImage(_ticket?.posterPath ??
-              "https://image.tmdb.org/t/p/original/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg"),
+    var image = _ticket?.posterPath ??
+        "https://image.tmdb.org/t/p/original/y4MBh0EjBlMuOzv9axM4qJlmhzz.jpg";
+    return Stack(
+      children: <Widget>[
+        Image.network(
+          image,
           fit: BoxFit.cover,
+          height: double.infinity,
+          width: double.infinity,
+          alignment: Alignment.center,
         ),
-      ),
-      child: new BackdropFilter(
-        filter: new prefix0.ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-        child: new Container(
-          decoration: new BoxDecoration(color: Colors.white.withOpacity(0.0)),
-        ),
-      ),
+        ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              color: Colors.black.withOpacity(0),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

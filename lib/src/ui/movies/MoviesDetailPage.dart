@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
 
-import '../../blocs/movies_bloc.dart';
 import '../../models/movie_model.dart';
 
 class MoviesDetailPage extends StatelessWidget {
@@ -69,7 +67,8 @@ Widget buildListItem(BuildContext context, Movie item) {
       child: Stack(children: <Widget>[
         Positioned.fill(
             child: (item.posterUrl != null)
-                ? FittedBox(fit: BoxFit.cover, child: Image.network(item.posterUrl))
+                ? FittedBox(
+                    fit: BoxFit.cover, child: Image.network(item.posterUrl))
                 : Center(
                     child: Padding(
                     padding: const EdgeInsets.all(8),

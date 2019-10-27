@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/lib/buildBottomNavigationBar.dart';
+import 'package:flutter_app/lib/buildNavigation.dart';
 
 import 'account/AccountPage.dart';
 import 'cinemas/CinemasPage.dart';
@@ -15,7 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     CinemasPage(),
     MoviesPage(),
@@ -32,8 +31,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: buildBottomNavigationBar(context, _selectedIndex, _onItemTapped),
+      body: Row(
+        children: <Widget>[
+          buildNavigationDrawer(context, _selectedIndex, _onItemTapped),
+          // Spacer(flex: 1),
+          // _widgetOptions.elementAt(_selectedIndex),
+          Expanded(child: _widgetOptions.elementAt(_selectedIndex)),
+        ],
+      ),
+      bottomNavigationBar:
+          buildBottomNavigationBar(context, _selectedIndex, _onItemTapped),
     );
   }
 }
