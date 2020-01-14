@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/src/app.dart';
 
 void main() {
-  _setTargetPlatformForDesktop();
+//   _setTargetPlatformForDesktop();
   runApp(new MyApp());
 }
 

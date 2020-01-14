@@ -13,6 +13,7 @@ class CinemasPage extends StatefulWidget {
 
 class CinemasPageState extends State<CinemasPage> {
   Completer<GoogleMapController> _controller = Completer();
+  final List<Marker> _markers = [];
 
   static final CameraPosition _kGoogleParis = CameraPosition(
     target: LatLng(48.8567, 2.3508),
@@ -37,25 +38,48 @@ class CinemasPageState extends State<CinemasPage> {
             return Text(snapshot.error.toString());
           }
 
-          return snapshot.hasData
-              ? buildMaps(context, snapshot.data.results)
-              : new Center(child: new CircularProgressIndicator());
+//          _loadMarkers(snapshot.data.results);
+
+          if (snapshot.hasData) {
+            _setMarkers(snapshot.data.results);
+          }
+
+          return Stack(
+            children: <Widget>[
+              buildMaps(context),
+              if (!snapshot.hasData) new Center(child: new CircularProgressIndicator())
+            ],
+          );
         },
       ),
-//      floatingActionButton: FloatingActionButton.extended(
-//        onPressed: _goToTheLake,
-//        label: Text('To the lake!'),
-//        icon: Icon(Icons.directions_boat),
-//      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _centerToMyLocation,
+        child: Icon(Icons.my_location),
+      ),
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _centerToMyLocation() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+    controller.animateCamera(CameraUpdate.newCameraPosition(_kGoogleParis));
   }
 
-  Widget buildMaps(BuildContext context, List<Cinema> cinemas) {
+  Future<void> _setMarkers(List<Cinema> results) async {
+    setState(() {
+      _markers.clear();
+      _markers.addAll(results
+          .where((item) => item.coordinates.latitude != null && item.coordinates.latitude != null)
+          .map(
+            (item) => Marker(
+              markerId: MarkerId(item.street),
+              position: LatLng(item.coordinates.latitude, item.coordinates.longitude),
+              infoWindow: InfoWindow(title: item.name, snippet: item.street),
+            ),
+          ));
+    });
+  }
+
+  Widget buildMaps(BuildContext context) {
     return new GoogleMap(
       mapType: MapType.normal,
       mapToolbarEnabled: false,
@@ -65,16 +89,7 @@ class CinemasPageState extends State<CinemasPage> {
       onMapCreated: (GoogleMapController controller) {
         _controller.complete(controller);
       },
-      markers: cinemas
-          .where((item) => item.coordinates.latitude != null && item.coordinates.latitude != null)
-          .map(
-            (item) => Marker(
-              markerId: MarkerId(item.street),
-              position: LatLng(item.coordinates.latitude, item.coordinates.longitude),
-              infoWindow: InfoWindow(title: item.name, snippet: item.street),
-            ),
-          )
-          .toSet(),
+      markers: _markers.toSet(),
     );
   }
 }
